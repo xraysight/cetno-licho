@@ -1,2 +1,2 @@
 # licho
-A two-player strategy board game 
+Licho is a two-player strategy game played on a 6x7 grid, where players take turns placing numbers on the board starting from 1. The goal is to place the highest possible number, with each move being adjacent to the last placed number and following specific rules regarding neighboring filled cells. One player can be replaced by the computer. The game ends when no valid moves are left, and the last player unable to move loses. The board also has blocked fields, adding to the challenge. The rule of placing numbers is that new field must be adjacent with odd number of already taken fields. It also must be adjacent with the last move field.
