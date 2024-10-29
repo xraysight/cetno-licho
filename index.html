@@ -84,6 +84,7 @@
         .cell.blocked {
             background: transparent;
             cursor: default;
+            box-shadow: none;
             pointer-events: none;
             border: none;
         }
@@ -394,21 +395,21 @@
         }
 
         // Check if a move is valid
-function isValidMove(row, col) {
-    if (board[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
-    if (lastMove === null && moveNumber === 1) return true;
+        function isValidMove(row, col) {
+            if (board[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
+            if (lastMove === null && moveNumber === 1) return true;
 
-    if (!isAdjacent(row, col, lastMove.row, lastMove.col)) return false;
+            if (!isAdjacent(row, col, lastMove.row, lastMove.col)) return false;
 
-    const neighbors = getNeighbors(row, col);
-    const numberedNeighbors = neighbors.filter(n => {
-        const cellValue = board[n.row][n.col];
-        return cellValue !== null && cellValue !== 'blocked';
-    });
-    if (numberedNeighbors.length % 2 !== 1) return false;
+            const neighbors = getNeighbors(row, col);
+            const numberedNeighbors = neighbors.filter(n => {
+                const cellValue = board[n.row][n.col];
+                return cellValue !== null && cellValue !== 'blocked';
+            });
+            if (numberedNeighbors.length % 2 !== 1) return false;
 
-    return true;
-}
+            return true;
+        }
 
         // Check if two cells are adjacent
         function isAdjacent(row1, col1, row2, col2) {
@@ -462,88 +463,88 @@ function isValidMove(row, col) {
             }
         }
 
-function computerMoveNormal() {
-    const validMoves = [];
-    for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-            if (isValidMove(row, col)) {
-                validMoves.push({ row, col });
+        function computerMoveNormal() {
+            const validMoves = [];
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (isValidMove(row, col)) {
+                        validMoves.push({ row, col });
+                    }
+                }
             }
-        }
-    }
 
-    // First, try to find a winning move (after which Player 1 has no valid moves)
-    for (let move of validMoves) {
-        // Clone the board and simulate the move
-        const boardClone = JSON.parse(JSON.stringify(board));
-        boardClone[move.row][move.col] = {
-            player: 2,
-            number: moveNumber
-        };
-        const lastMoveClone = { row: move.row, col: move.col };
-        const moveNumberClone = moveNumber + 1;
+            // First, try to find a winning move (after which Player 1 has no valid moves)
+            for (let move of validMoves) {
+                // Clone the board and simulate the move
+                const boardClone = JSON.parse(JSON.stringify(board));
+                boardClone[move.row][move.col] = {
+                    player: 2,
+                    number: moveNumber
+                };
+                const lastMoveClone = { row: move.row, col: move.col };
+                const moveNumberClone = moveNumber + 1;
 
-        // Check if Player 1 has any valid moves after this move
-        const playerValidMoves = getAllValidMoves(1, lastMoveClone, boardClone, moveNumberClone);
-        if (playerValidMoves.length === 0) {
-            // Winning move found
-            makeMove(move.row, move.col);
-            if (gameActive) {
-                switchPlayer();
-                updateValidMoves();
+                // Check if Player 1 has any valid moves after this move
+                const playerValidMoves = getAllValidMoves(1, lastMoveClone, boardClone, moveNumberClone);
+                if (playerValidMoves.length === 0) {
+                    // Winning move found
+                    makeMove(move.row, move.col);
+                    if (gameActive) {
+                        switchPlayer();
+                        updateValidMoves();
+                    }
+                    return;
+                }
             }
-            return;
-        }
-    }
 
-    // Second, try to find a move where, after any of Player 1's moves, the computer still has valid moves
-    for (let move of validMoves) {
-        // Clone the board and simulate the move
-        const boardClone = JSON.parse(JSON.stringify(board));
-        boardClone[move.row][move.col] = {
-            player: 2,
-            number: moveNumber
-        };
-        const lastMoveClone = { row: move.row, col: move.col };
-        const moveNumberClone = moveNumber + 1;
+            // Second, try to find a move where, after any of Player 1's moves, the computer still has valid moves
+            for (let move of validMoves) {
+                // Clone the board and simulate the move
+                const boardClone = JSON.parse(JSON.stringify(board));
+                boardClone[move.row][move.col] = {
+                    player: 2,
+                    number: moveNumber
+                };
+                const lastMoveClone = { row: move.row, col: move.col };
+                const moveNumberClone = moveNumber + 1;
 
-        // Get all possible moves for Player 1 after this move
-        const playerValidMoves = getAllValidMoves(1, lastMoveClone, boardClone, moveNumberClone);
+                // Get all possible moves for Player 1 after this move
+                const playerValidMoves = getAllValidMoves(1, lastMoveClone, boardClone, moveNumberClone);
 
-        let computerHasResponse = true;
+                let computerHasResponse = true;
 
-        for (let playerMove of playerValidMoves) {
-            // Simulate Player 1's move
-            const boardClone2 = JSON.parse(JSON.stringify(boardClone));
-            boardClone2[playerMove.row][playerMove.col] = {
-                player: 1,
-                number: moveNumberClone
-            };
-            const lastMoveClone2 = { row: playerMove.row, col: playerMove.col };
-            const moveNumberClone2 = moveNumberClone + 1;
+                for (let playerMove of playerValidMoves) {
+                    // Simulate Player 1's move
+                    const boardClone2 = JSON.parse(JSON.stringify(boardClone));
+                    boardClone2[playerMove.row][playerMove.col] = {
+                        player: 1,
+                        number: moveNumberClone
+                    };
+                    const lastMoveClone2 = { row: playerMove.row, col: playerMove.col };
+                    const moveNumberClone2 = moveNumberClone + 1;
 
-            // Check if computer has any valid moves after Player 1's move
-            const computerResponseMoves = getAllValidMoves(2, lastMoveClone2, boardClone2, moveNumberClone2);
-            if (computerResponseMoves.length === 0) {
-                computerHasResponse = false;
-                break;
+                    // Check if computer has any valid moves after Player 1's move
+                    const computerResponseMoves = getAllValidMoves(2, lastMoveClone2, boardClone2, moveNumberClone2);
+                    if (computerResponseMoves.length === 0) {
+                        computerHasResponse = false;
+                        break;
+                    }
+                }
+
+                if (computerHasResponse) {
+                    // Found a move where the computer will have valid moves after any of Player 1's moves
+                    makeMove(move.row, move.col);
+                    if (gameActive) {
+                        switchPlayer();
+                        updateValidMoves();
+                    }
+                    return;
+                }
             }
-        }
 
-        if (computerHasResponse) {
-            // Found a move where the computer will have valid moves after any of Player 1's moves
-            makeMove(move.row, move.col);
-            if (gameActive) {
-                switchPlayer();
-                updateValidMoves();
-            }
-            return;
+            // If no such move is found, make a random move
+            computerMoveEasy();
         }
-    }
-
-    // If no such move is found, make a random move
-    computerMoveEasy();
-}
 
         // Get all valid moves for a player given a board state
         function getAllValidMoves(player, lastMoveParam, boardParam, moveNumberParam) {
@@ -558,21 +559,21 @@ function computerMoveNormal() {
             return validMoves;
         }
 
-function isValidMoveSimulation(row, col, player, lastMoveSim, boardSim, moveNumberSim) {
-    if (boardSim[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
-    if (lastMoveSim === null && moveNumberSim === 1) return true;
+        function isValidMoveSimulation(row, col, player, lastMoveSim, boardSim, moveNumberSim) {
+            if (boardSim[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
+            if (lastMoveSim === null && moveNumberSim === 1) return true;
 
-    if (!isAdjacent(row, col, lastMoveSim.row, lastMoveSim.col)) return false;
+            if (!isAdjacent(row, col, lastMoveSim.row, lastMoveSim.col)) return false;
 
-    const neighbors = getNeighbors(row, col);
-    const numberedNeighbors = neighbors.filter(n => {
-        const cellValue = boardSim[n.row][n.col];
-        return cellValue !== null && cellValue !== 'blocked';
-    });
-    if (numberedNeighbors.length % 2 !== 1) return false;
+            const neighbors = getNeighbors(row, col);
+            const numberedNeighbors = neighbors.filter(n => {
+                const cellValue = boardSim[n.row][n.col];
+                return cellValue !== null && cellValue !== 'blocked';
+            });
+            if (numberedNeighbors.length % 2 !== 1) return false;
 
-    return true;
-}
+            return true;
+        }
         
         // Generate random blocked cells on the border
         function generateRandomBlockedCells() {
