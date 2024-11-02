@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Licho Game</title>
+    <title>Cetno-Licho</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* CSS Styles */
@@ -20,7 +20,7 @@
             margin-top: 20px;
             margin-bottom: 10px;
             font-size: 4vw;
-            color: #fff;
+            color: yellow;
             text-shadow: 2px 2px 5px #000;
         }
 
@@ -136,6 +136,7 @@
             background: rgba(0, 0, 0, 0.9);
             overflow: auto;
             z-index: 1000;
+            transition: opacity 0.3s ease;
         }
 
         #helpContent {
@@ -154,6 +155,7 @@
             text-align: center;
             margin-top: 0;
             text-shadow: 2px 2px 5px #000;
+            color: yellow;
         }
 
         #helpContent p {
@@ -177,8 +179,97 @@
             background: linear-gradient(45deg, #777, #999);
         }
 
-        .hidden {
-            display: none;
+        #overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #overlay:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Settings Overlay */
+        #settingsOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+
+        #settingsContent {
+            background: #1e1e1e;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            margin: 100px auto;
+            text-align: center;
+            border-radius: 10px;
+            color: #fff;
+            box-shadow: 0 0 20px #000;
+        }
+
+        #settingsContent h2 {
+            margin-top: 0;
+            text-shadow: 2px 2px 5px #000;
+            color: yellow;
+        }
+
+        .settings-section {
+            margin: 20px 0;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 10px;
+            color: green;
+        }
+
+        .settings-section label {
+            margin-right: 15px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .settings-section input[type="radio"],
+        .settings-section input[type="checkbox"] {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .settings-section input[type="radio"]:disabled + label {
+            cursor: not-allowed;
+            color: #777;
+        }
+
+        #settingsContent button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(45deg, #555, #777);
+            color: #fff;
+            box-shadow: 2px 2px 5px #000;
+            cursor: pointer;
+        }
+
+        #settingsContent button:hover {
+            background: linear-gradient(45deg, #777, #999);
+        }
+
+        #settingsOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #settingsOverlay:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* Responsive adjustments */
@@ -207,15 +298,14 @@
     </style>
 </head>
 <body>
-    <h1>Licho Game</h1>
+    <h1>Cetno-Licho</h1>
 
     <div class="controls">
-        <button id="playerToggle">Player 2: Human</button>
-        <button id="difficultyButton" disabled>Difficulty: Easy</button>
-        <br>
-        <button id="helpButton">Help</button>
-        <button id="resetButton">Reset</button>
-        <button id="randomizeButton">Random Board</button>
+        <div class="controls">
+            <button id="resetButton">Reset</button>
+            <button id="settingsButton">Settings</button>
+            <button id="helpButton">Help</button>
+        </div>    
     </div>
 
     <div id="gameStatus"></div>
@@ -224,33 +314,94 @@
 
     <div id="overlay" class="hidden">
         <div id="helpContent">
-            <h2>How to Play Licho</h2>
+            <h2>How to Play Cetno-Licho</h2>
             <p>
-                - The game is played on a 6x7 grid (6 columns and 7 rows).<br>
-                - Some cells are blocked and cannot be used.<br>
-                - Player 1 starts by placing the number 1 on any unblocked cell.<br>
-                - Players take turns placing the next number on an adjacent cell.<br>
-                - You can only place a number if there is an odd number of already numbered neighboring cells.<br>
-                - The game ends when a player cannot make a move.<br>
-                - The last player to make a valid move wins.<br>
-                - Use the "Random Board" button to start a game with random blocked border cells.<br>
-                - When playing against the computer, you can switch difficulty between Easy and Normal.
-            </p>
+            <ul>
+                <li>The game is played on a 6x7 grid (6 columns and 7 rows).</li>
+                <li>Some cells are blocked and cannot be used.</li>
+                <li>Player 1 starts by placing the number 1 on any unblocked cell.</li>
+                <li>Players take turns placing the next number on an adjacent cell.</li>
+                <li>Cetno mode - numbers can only be placed when an <b>even</b> number of neighboring cells are taken.</li>
+                <li>Licho mode - numbers can only be placed when an <b>odd</b> number of neighboring cells are taken.</li>
+                <li>The game ends when a player cannot make a move.</li>
+                <li>The last player to make a valid move wins.</li>
+                <li>Use the "Settings" button to configure game settings.</li>
+            </ul>
+            <p>
             <button id="closeHelp">Close</button>
         </div>
     </div>
 
+    <!-- Settings Overlay -->
+    <div id="settingsOverlay" class="hidden">
+        <div id="settingsContent">
+            <h2>SETTINGS</h2>
+            <div class="settings-section">
+                <h3>Player 2 Type:</h3>
+                <label>
+                    <input type="radio" name="player2Type" value="human" checked>
+                    Human
+                </label>
+                <label>
+                    <input type="radio" name="player2Type" value="computer">
+                    Computer
+                </label>
+            </div>
+            <div class="settings-section">
+                <h3>Difficulty Level:</h3>
+                <label>
+                    <input type="radio" name="difficultyLevel" value="Easy" checked>
+                    Easy
+                </label>
+                <label>
+                    <input type="radio" name="difficultyLevel" value="Normal">
+                    Normal
+                </label>
+            </div>
+            <div class="settings-section">
+                <h3>Neighbor Requirement:</h3>
+                <label>
+                    <input type="radio" name="neighborRequirement" value="odd" checked>
+                    Odd
+                </label>
+                <label>
+                    <input type="radio" name="neighborRequirement" value="even">
+                    Even
+                </label>
+            </div>
+            <div class="settings-section">
+                <h3>Board Randomization:</h3>
+                <label>
+                    <input type="checkbox" id="randomizeCheckbox">
+                    Use Random Board on Reset
+                </label>
+            </div>
+            <button id="closeSettings">Close</button>
+        </div>
+    </div>
+    <div>
+        <a href="https://github.com/xraysight/cetno-licho">Source code</a>
+    </div>
+    
     <script>
         // JavaScript Code
 
         const gameBoard = document.getElementById('gameBoard');
         const gameStatus = document.getElementById('gameStatus');
-        const playerToggle = document.getElementById('playerToggle');
         const resetButton = document.getElementById('resetButton');
         const helpButton = document.getElementById('helpButton');
-        const randomizeButton = document.getElementById('randomizeButton');
         const overlay = document.getElementById('overlay');
         const closeHelp = document.getElementById('closeHelp');
+        const neighborButton = document.getElementById('neighborButton');
+        
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsOverlay = document.getElementById('settingsOverlay');
+        const closeSettings = document.getElementById('closeSettings');
+        
+        const player2RadioButtons = Array.from(document.getElementsByName('player2Type'));
+        const difficultyRadioButtons = Array.from(document.getElementsByName('difficultyLevel'));
+        const neighborRadioButtons = Array.from(document.getElementsByName('neighborRequirement'));
+        const randomizeCheckbox = document.getElementById('randomizeCheckbox');
 
         let board = [];
         let currentPlayer = 1;
@@ -259,6 +410,8 @@
         let gameActive = true;
         let isPlayer2Computer = false;
         let difficulty = 'Easy'; // 'Easy' or 'Normal'
+        let neighborRequirement = 'odd'; // 'odd' or 'even'
+        let useRandomBoard = false; // Default is to use the default board shape
 
         const ROWS = 7; // 7 rows vertically
         const COLS = 6; // 6 columns horizontally
@@ -288,6 +441,17 @@
                 blockedCells = [...defaultBlockedCells];
             }
 
+            isPlayer2Computer = document.querySelector('input[name="player2Type"]:checked').value === 'computer';
+
+            // Update difficulty button state
+            updateDifficultyButtons();
+
+            // Reset to default difficulty when switching to Computer
+            if (isPlayer2Computer) {
+                difficulty = 'Easy';
+                document.querySelector(`input[name="difficultyLevel"][value="${difficulty}"]`).checked = true;
+            }
+            
             createBoard();
             updateValidMoves();
         }
@@ -399,6 +563,11 @@
             if (board[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
             if (lastMove === null && moveNumber === 1) return true;
 
+            // Allow the second move if it's adjacent to the first move, regardless of neighbor count
+            if (moveNumber === 2 && isAdjacent(row, col, lastMove.row, lastMove.col)) {
+                return true;
+            }
+
             if (!isAdjacent(row, col, lastMove.row, lastMove.col)) return false;
 
             const neighbors = getNeighbors(row, col);
@@ -406,7 +575,10 @@
                 const cellValue = board[n.row][n.col];
                 return cellValue !== null && cellValue !== 'blocked';
             });
-            if (numberedNeighbors.length % 2 !== 1) return false;
+
+            // Use the neighborRequirement variable
+            if (neighborRequirement === 'odd' && numberedNeighbors.length % 2 !== 1) return false;
+            if (neighborRequirement === 'even' && numberedNeighbors.length % 2 !== 0) return false;
 
             return true;
         }
@@ -563,6 +735,11 @@
             if (boardSim[row][col] !== null) return false; // Correctly excludes occupied and blocked cells
             if (lastMoveSim === null && moveNumberSim === 1) return true;
 
+            // Allow the second move if it's adjacent to the first move, regardless of neighbor count
+            if (moveNumberSim === 2 && isAdjacent(row, col, lastMoveSim.row, lastMoveSim.col)) {
+                return true;
+            }
+
             if (!isAdjacent(row, col, lastMoveSim.row, lastMoveSim.col)) return false;
 
             const neighbors = getNeighbors(row, col);
@@ -570,7 +747,10 @@
                 const cellValue = boardSim[n.row][n.col];
                 return cellValue !== null && cellValue !== 'blocked';
             });
-            if (numberedNeighbors.length % 2 !== 1) return false;
+            
+            // Use the neighborRequirement variable
+            if (neighborRequirement === 'odd' && numberedNeighbors.length % 2 !== 1) return false;
+            if (neighborRequirement === 'even' && numberedNeighbors.length % 2 !== 0) return false;
 
             return true;
         }
@@ -596,37 +776,106 @@
             blockedCells = shuffled.slice(0, 6);
         }
 
+        function applySettings() {
+            // Update Player 2 Type
+            isPlayer2Computer = document.querySelector('input[name="player2Type"]:checked').value === 'computer';
+
+            // Update Difficulty Level
+            difficulty = document.querySelector('input[name="difficultyLevel"]:checked').value;
+
+            // Update Neighbor Requirement
+            neighborRequirement = document.querySelector('input[name="neighborRequirement"]:checked').value;
+
+            // Update Board Randomization
+            useRandomBoard = randomizeCheckbox.checked;
+
+            // Reset the game with the new settings
+            if (useRandomBoard) {
+                generateRandomBlockedCells();
+                initGame(false); // Initialize with randomized blocked cells
+            } else {
+                initGame(true); // Initialize with default blocked cells
+            }
+        }
+
+        function resetGameWithNewSettings() {
+            if (useRandomBoard) {
+                generateRandomBlockedCells();
+                initGame(false); // Use current (randomized) blockedCells
+            } else {
+                initGame(true); // Use default blockedCells
+            }
+        }
+
+        function updateDifficultyButtons() {
+            difficultyRadioButtons.forEach(radio => {
+                radio.disabled = !isPlayer2Computer;
+                if (!isPlayer2Computer) {
+                    radio.parentElement.style.opacity = '0.5';
+                } else {
+                    radio.parentElement.style.opacity = '1';
+                }
+            });
+        }
+        
         // Event listeners
-        playerToggle.addEventListener('click', () => {
-            isPlayer2Computer = !isPlayer2Computer;
-            playerToggle.textContent = `Player 2: ${isPlayer2Computer ? 'Computer' : 'Human'}`;
 
-            // Enable or disable the difficulty button
-            difficultyButton.disabled = !isPlayer2Computer;
+        player2RadioButtons.forEach(radio => {
+            radio.addEventListener('change', () => {
+                isPlayer2Computer = radio.value === 'computer';
+                difficulty = 'Easy'; // Reset to default when switching to Computer
+                updateDifficultyButtons();
+            });
+        });
+        
+        difficultyRadioButtons.forEach(radio => {
+            radio.addEventListener('change', () => {
+                difficulty = radio.value;
+            });
+        });
+        
+        neighborRadioButtons.forEach(radio => {
+            radio.addEventListener('change', () => {
+                neighborRequirement = radio.value;
+                updateValidMoves();
+            });
+        });
 
-            if (!gameActive) {
-                initGame();
+        resetButton.addEventListener('click', () => {
+            if (useRandomBoard) {
+                generateRandomBlockedCells();
+                initGame(false); // Initialize with current (randomized) blockedCells
+            } else {
+                initGame(true); // Initialize with default blockedCells
             }
         });
-
-        resetButton.addEventListener('click', () => initGame(true));
-
+        
         helpButton.addEventListener('click', () => {
+            // Close Settings Overlay if open
+            settingsOverlay.classList.add('hidden');
+            // Open Help Overlay
             overlay.classList.remove('hidden');
         });
-
+        
         closeHelp.addEventListener('click', () => {
             overlay.classList.add('hidden');
         });
 
-        randomizeButton.addEventListener('click', () => {
-            generateRandomBlockedCells();
-            initGame(false);
+        settingsButton.addEventListener('click', () => {
+            // Close Help Overlay if open
+            overlay.classList.add('hidden');
+            // Open Settings Overlay
+            settingsOverlay.classList.remove('hidden');
         });
 
-        difficultyButton.addEventListener('click', () => {
-            difficulty = difficulty === 'Easy' ? 'Normal' : 'Easy';
-            difficultyButton.textContent = `Difficulty: ${difficulty}`;
+        closeSettings.addEventListener('click', () => {
+            settingsOverlay.classList.add('hidden');
+            applySettings();
+            resetGameWithNewSettings();
+        });
+
+        randomizeCheckbox.addEventListener('change', () => {
+            useRandomBoard = randomizeCheckbox.checked;
         });
 
         // Start the game
