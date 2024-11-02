@@ -1,6 +1,8 @@
 # Licho game
 Licho is a simple yet engaging two-player strategy game brought to life through the power of GPT o1 model supported development. This game started as a nostalgic idea from childhood—a game played countless times with pen and paper, now reimagined for the digital world.
 
+The game is accessible here: https://xraysight.github.io/licho/
+
 ## How to play
 - Players: 2
 - Objective: Place the highest possible number on the grid.
