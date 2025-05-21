@@ -1,0 +1,315 @@
+/* CSS Styles */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
+
+h1 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 4vw;
+    color: yellow;
+    text-shadow: 2px 2px 5px #000;
+}
+
+.controls {
+    margin: 20px;
+}
+
+.controls button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(45deg, #555, #777);
+    color: #fff;
+    box-shadow: 2px 2px 5px #000;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: linear-gradient(45deg, #777, #999);
+}
+
+/* Disable the difficulty button when inactive */
+.controls button:disabled {
+    background: #333;
+    cursor: not-allowed;
+    color: #777;
+}
+
+#gameStatus {
+    font-size: 2em;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 3px #000;
+}
+
+#gameBoard {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(7, 1fr); /* This implies a structure for ARIA rows if cells are direct children */
+    /* If script adds intermediate row divs, grid-template-rows should be on gameBoard, not here, or applied to row divs */
+    gap: 2px;
+    max-width: 90vw;
+    max-height: 58vh; /* Adjusted to fit within the viewport */
+    aspect-ratio: 6 / 7; /* Maintains the board's aspect ratio */
+    margin: 0 auto 20px auto;
+    background-color: #1e1e1e; /* Match this to your page background color */
+}
+
+.cell {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    background: #2b2b2b;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 2px 2px 5px #000, inset -2px -2px 5px #444;
+    transition: background-color 0.3s;
+    /* Ensure cells can display content like numbers centered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell.blocked {
+    background: transparent;
+    cursor: default;
+    box-shadow: none;
+    pointer-events: none;
+    border: none;
+}
+
+.cell.valid::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 128, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 128, 255, 0.7);
+    pointer-events: none;
+}
+
+.cell .number {
+    font-size: 2.5em; /* Relative to cell's font size, which isn't set, so it's relative to body/parent */
+    color: #fff;
+    text-align: center;
+    /* position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); */ /* Replaced by flex centering on .cell */
+    text-shadow: none;
+    pointer-events: none; /* So clicks go to the cell, not the number div */
+}
+
+/* Styles for player cells */
+.cell.player1 {
+    background-color: #006400; /* DarkGreen for better contrast with white text */
+}
+
+.cell.player2 {
+    background-color: #C00000; /* Darker Red for better contrast with white text */
+}
+
+#winnerMessage {
+    color: #ffbf00; /* Amber color */
+    text-transform: uppercase;
+    text-shadow: 2px 2px 5px #000;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+#helpContent {
+    background: #1e1e1e;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: left;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 0 20px #000;
+}
+
+#helpContent h2 {
+    text-align: center;
+    margin-top: 0;
+    text-shadow: 2px 2px 5px #000;
+    color: yellow;
+}
+
+#helpContent p {
+    font-size: 1.2em;
+}
+
+#helpContent button {
+    display: block;
+    margin: 20px auto 0 auto;
+    font-size: 1.2em;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(45deg, #555, #777);
+    color: #fff;
+    box-shadow: 2px 2px 5px #000;
+    cursor: pointer;
+}
+
+#helpContent button:hover {
+    background: linear-gradient(45deg, #777, #999);
+}
+
+#overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#overlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Settings Overlay */
+#settingsOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+#settingsContent {
+    background: #1e1e1e;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    margin: 100px auto;
+    text-align: center;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 0 20px #000;
+}
+
+#settingsContent h2 {
+    margin-top: 0;
+    text-shadow: 2px 2px 5px #000;
+    color: yellow;
+}
+
+.settings-section {
+    margin: 20px 0;
+}
+
+.settings-section h3 {
+    margin-bottom: 10px;
+    color: green; /* This is the original 'green', might need adjustment if it's hard to read */
+}
+
+.settings-section label {
+    margin-right: 15px;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.settings-section input[type="radio"],
+.settings-section input[type="checkbox"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.settings-section input[type="radio"]:disabled + label {
+    cursor: not-allowed;
+    color: #777;
+}
+
+#settingsContent button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(45deg, #555, #777);
+    color: #fff;
+    box-shadow: 2px 2px 5px #000;
+    cursor: pointer;
+}
+
+#settingsContent button:hover {
+    background: linear-gradient(45deg, #777, #999);
+}
+
+#settingsOverlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#settingsOverlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 6vw;
+        margin-top: 15px; /* Slightly reduce top margin for small screens */
+        margin-bottom: 15px; /* Consistent margin */
+    }
+
+    .controls {
+        margin: 15px; /* Reduce margin for controls on small screens */
+    }
+
+    .controls button {
+        font-size: 0.9em; /* Slightly smaller font for buttons on small screens */
+        padding: 8px 12px; /* Adjust padding */
+    }
+
+    #gameStatus {
+        font-size: 1.5em;
+        margin-bottom: 15px; /* Consistent margin */
+    }
+
+    .cell .number {
+        font-size: 2em; /* Adjusted from 2.5em for smaller cells */
+    }
+
+    #helpContent p {
+        font-size: 1em;
+    }
+
+    #helpContent, #settingsContent {
+        margin-top: 50px; /* Reduce top margin for overlays on smaller/shorter screens */
+        margin-bottom: 50px;
+        padding: 15px;
+    }
+
+    #helpContent h2, #settingsContent h2 {
+        font-size: 1.5em; /* Adjust heading in overlay */
+    }
+
+    .settings-section label {
+        font-size: 1em; /* Adjust label font size in settings */
+        margin-right: 10px;
+    }
+}
